@@ -1,0 +1,177 @@
+﻿@model IEnumerable<DemoClient.Models.MovieTbl>
+@inject IHttpContextAccessor HttpContextAccesor
+@{
+    ViewData["Title"] = "Index";
+    ViewBag.UserName = @HttpContextAccesor.HttpContext.Session.GetString("UserName");
+    if (ViewBag.UserName != null)
+    {
+        Layout = "UserLayout";
+    }
+    else
+    {
+        Layout = "AdminLayout";
+    }
+}
+
+
+
+
+
+<table class="table">
+    @if (ViewBag.UserName != null)
+    {
+        <body style="background-color:rgb(220, 204, 255);font-family:Garamond, serif;">
+            <h1>Search By Date</h1>
+            @if (ViewBag.Message != null)
+            {
+                <div class="text-danger">
+                    @ViewBag.Message
+                </div>
+            }
+            else
+            {
+                <form asp-controller="Movie" asp-action="search">
+                    <p>
+                        Search By Date: <input type="date" name="date" />
+                        <input type="submit" value="Search" />
+                    </p>
+                </form>
+            }
+        </body>
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.MovieName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Image)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Slot)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cost)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.capacity)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MovieName)
+                    </td>
+                    <td>
+                        <img src="/Images/@item.Image" alt="Image" height="100" width="100" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Slot)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cost)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.capacity)
+                    </td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="BookNow" asp-route-id="@item.MovieId">Book Now</a>
+                </tr>
+            }
+        </tbody>
+    }
+    else
+    {
+        <body style="background-color:rgb(214, 245, 214);font-family:Garamond, serif;">
+            <h1>Movies Running</h1>
+            <p>
+                <a class="btn btn-outline-primary" asp-action="Create">Add movie</a>
+            </p>
+            <h1>Search By Date</h1>
+            @if (ViewBag.Message != null)
+            {
+                <div class="text-danger">
+                    @ViewBag.Message
+                </div>
+            }
+            else
+            {
+                @*<form asp-controller="Movie" asp-action="search">
+                    <p>
+                        Search By Date: <input type="date" name="searchdate" />
+                        <input type="submit" value="Search" />
+                    </p>
+                </form>*@
+            <thead>
+                <tr>
+                    <th>
+                            @Html.DisplayNameFor(model => model.MovieId)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.MovieName)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.Image)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.Slot)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.Cost)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.capacity)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.MovieId)
+                        </td>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.MovieName)
+                        </td>
+                        <td>
+                                @* @Html.DisplayFor(modelItem => item.Image)*@
+                            <img src="/Images/@item.Image" alt="Image" height="100" width="100" />
+                        </td>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.Slot)
+                        </td>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.Cost)
+                        </td>
+                        <td>
+                                @Html.DisplayFor(modelItem => item.capacity)
+                        </td>
+                        <td>
+                                @* <a asp-action="Edit" asp-route-id="@item.MovieId">Edit</a> |*@
+                            <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.MovieId">Details</a> |
+                            <a class="btn btn-outline-primary" asp-action="Delete" asp-route-id="@item.MovieId">Delete</a>
+                        </td>
+                    </tr>
+                    }
+            </tbody>
+            }
+        </body>
+    }
+</table>

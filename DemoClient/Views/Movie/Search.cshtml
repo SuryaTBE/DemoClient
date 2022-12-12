@@ -1,0 +1,138 @@
+﻿@model IEnumerable<DemoClient.Models.MovieTbl>
+@inject IHttpContextAccessor HttpContextAccesor
+
+@{
+    ViewData["Title"] = "search";
+    ViewBag.UserName = @HttpContextAccesor.HttpContext.Session.GetString("UserName");
+    if (ViewBag.UserName != null)
+    {
+        Layout = "UserLayout";
+    }
+    else
+    {
+        Layout = "AdminLayout";
+    }
+}
+
+
+<table class="table">
+    @if (ViewBag.UserName != null)
+    {
+        <body style="background-color:rgb(220, 204, 255);font-family:Garamond, serif;">
+            <h1>Now Showing</h1>
+            <h4>Search Results</h4>
+        <thead>
+            <tr>
+                <th>
+                        @Html.DisplayNameFor(model => model.MovieName)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Image)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Slot)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Cost)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.capacity)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.MovieName)
+                    </td>
+                    <td>
+                        <img src="/Images/@item.Image" alt="Image" height="100" width="100" />
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Slot)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Cost)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.capacity)
+                    </td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="BookNow" asp-route-id="@item.MovieId">Book Now</a>
+                </tr>
+                }
+        </tbody>
+        </body>
+    }
+    else
+    {
+        <body style="background-color:rgb(214, 245, 214);font-family:Garamond, serif;">
+            <h1>Search</h1>
+            <p>
+                <a asp-action="Create">Create New</a>
+            </p>
+        <thead>
+            <tr>
+                <th>
+                        @Html.DisplayNameFor(model => model.MovieName)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Image)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Slot)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Cost)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.capacity)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.MovieName)
+                    </td>
+                    <td>
+                        <img src="/Image/@item.Image" alt="Image" height="100" width="100" />
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Slot)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Cost)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.capacity)
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.MovieId">Details</a> |
+                        <a class="btn btn-outline-primary" asp-action="Delete" asp-route-id="@item.MovieId">Delete</a>
+                    </td>
+                </tr>
+                }
+        </tbody>
+        </body>
+    }
+</table>
+

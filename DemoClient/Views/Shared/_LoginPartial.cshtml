@@ -1,0 +1,93 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccesor
+@*<head>
+    <link rel="stylesheet" href="~/css/SandStoneTheme.css" />
+</head>*@
+
+
+
+<ul class="navbar-nav">
+    @{
+        ViewBag.UserName = @HttpContextAccesor.HttpContext.Session.GetString("UserName");
+        ViewBag.AdminName = @HttpContextAccesor.HttpContext.Session.GetString("AdminName");
+    }
+    @if (ViewBag.UserName != null)
+    {
+
+        @*<li class="nav-item">
+    <a  class="nav-link text-dark"  title="Manage">Hello @ViewBag.UserName</a>
+    </li>*@
+        @*<div class="collapse navbar-collapse" id="navbarColor02">
+    <li class="nav-item">
+    <a class="nav-link text-light" title="Manage>Hello @ViewBag.UserName</a>
+    </li>
+    <li class="nav-item">
+    <form class="d-flex">
+    <button id="Logout" type="submit" class=" btn btn-secondary my-2 my-sm-0" asp-controller="User" asp-action="Logout">Logout</button>
+    </form>
+    </li>
+    </div>*@
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" title="Manage">
+                        Hello @ViewBag.UserName
+                        <span class="visually-hidden">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <form class="d-flex">
+                        <button id="Logout" type="submit" class="btn btn-secondary my-2 mt-sm-0" asp-controller="User" asp-action="Logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    }
+    else if (ViewBag.AdminName != null)
+    {
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" title="Manage">
+                        Hello @ViewBag.AdminName
+                        <span class="visually-hidden">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <form class="d-flex">
+                        <button id="Logout" type="submit" class="btn btn-secondary my-2 mt-sm-0" asp-controller="Admin" asp-action="Logout">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+    }
+    else
+    {
+        @*<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">*@
+        <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="nav navbar-nav me-auto">
+                @*<li class="dropdown">*@
+                <li class="nav-item dropdown">
+                    @*<button class="btn btn-block dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Login
+                </button>*@
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Login</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="User/Login">User</a>
+                        <a class="dropdown-item" href="Admin/Login">Admin</a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="User/Login">User</a></li>
+                            <li><a href="Admin/Login">Admin</a></li>
+                        </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarColor02">
+        <li class="nav-item">
+            <a class="nav-link active" asp-controller="User" asp-action="Register">Register</a>
+        </li>
+        </div>
+
+    }
+</ul>

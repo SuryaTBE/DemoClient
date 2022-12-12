@@ -1,0 +1,62 @@
+﻿@model DemoClient.Models.MovieTbl
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "AdminLayout";
+}
+<body style="background-color:rgb(214, 245, 214);font-family:Garamond, serif;">
+    <h1>Create</h1>
+
+    <h4>MovieTbl</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="MovieName" class="control-label"></label>
+                    <input asp-for="MovieName" class="form-control" />
+                    <span asp-validation-for="MovieName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Image" class="control-label"></label>
+                    <input asp-for="Image" type="file" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Date" class="control-label"></label>
+                    <input asp-for="Date" class="form-control" />
+                    <span asp-validation-for="Date" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Slot" class="control-label"></label>
+                    <input asp-for="Slot" class="form-control" />
+                    <span asp-validation-for="Slot" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Cost" class="control-label"></label>
+                    <input asp-for="Cost" class="form-control" />
+                    <span asp-validation-for="Cost" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="capacity" class="control-label"></label>
+                    <input asp-for="capacity" class="form-control" />
+                    <span asp-validation-for="capacity" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</body>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
