@@ -43,14 +43,19 @@ namespace DemoClient.Controllers
                 return View(movie);
             }
         }
-        //public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            using (var client=new HttpClient())
+            MovieTbl m = new MovieTbl();
+            using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("applicaation/json"));
-                HttpResponseMessage Res = await client.GetAsync("https://localhost:44341/api/Movie/" + id);
+                using (var response = await client.GetAsync("https://localhost:44341/api/Movie/" + id))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    m = JsonConvert.DeserializeObject<MovieTbl>(apiResponse);
+                }
             }
+            return View(m);
         }
         //public async Task<IActionResult> Search(DateTime searchdate)
         //{
@@ -85,6 +90,34 @@ namespace DemoClient.Controllers
                     string apiresponse = await response.Content.ReadAsStringAsync();
                     movie = JsonConvert.DeserializeObject<MovieTbl>(apiresponse);
                 }
+            }
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            TempData["Id"] = id;
+            MovieTbl? m = new MovieTbl();
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Clear();
+                using (var response = await client.GetAsync("https://localhost:44341/api/Movie/"+id))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    m = JsonConvert.DeserializeObject<MovieTbl>(apiResponse);
+                }
+            }
+            return View(m);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete(MovieTbl m)
+        {
+            int Id = Convert.ToInt32(TempData["Id"]);
+            //Employee emp = new Employee();
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Clear();
+                await client.DeleteAsync("https://localhost:44341/api/Movie/" + Id);
+
             }
             return RedirectToAction("Index");
         }
