@@ -41,6 +41,7 @@ namespace DemoClient.Controllers
                     string apiresponse=await response.Content.ReadAsStringAsync();
                     user = JsonConvert.DeserializeObject<UserTbl>(apiresponse);
                     HttpContext.Session.SetString("UserName", user.UserName);
+                    HttpContext.Session.SetInt32("UserId", user.UserId);
                     return RedirectToAction("Index", "Movie");
                 }
                 else

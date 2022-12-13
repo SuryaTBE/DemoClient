@@ -1,0 +1,97 @@
+﻿@model IEnumerable<DemoClient.Models.BookingTbl>
+@inject IHttpContextAccessor HttpContextAccesor
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "UserLayout";
+    ViewBag.msg = @HttpContextAccesor.HttpContext.Session.GetString("msg");
+}
+<body style="background-color:rgb(220, 204, 255);font-family:Garamond, serif;">
+    <h1>Cart</h1>
+    @if (ViewBag.msg != null)
+    {
+        <div class="text-danger">@ViewBag.msg</div>
+    }
+
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Movie)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Slot)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NoOfTickets)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SeatNo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.AmountTotal)
+                </th>
+                @*<th>
+                @Html.DisplayNameFor(model => model.UserId)
+                </th>*@
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Movie.MovieName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Slot)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NoOfTickets)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SeatNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AmountTotal)
+                    </td>
+
+                    @*<td>
+                @Html.DisplayFor(modelItem => item.User.UserId)
+                </td>*@
+                    <td>
+                        @*
+                    <a asp-action="Details" asp-route-id="@item.BookingId">Details</a> |*@
+                        <a class="btn btn-warning" asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+            <div class="text-danger">@ViewBag.ErrorMessage</div>
+        }
+        else
+        {
+            <form asp-controller="Booking" asp-action="ProceedtoBuy">
+                <div class="form-group">
+                    <input type="submit" value="BOOK" class="btn btn-warning" />
+                </div>
+            </form>
+        }
+
+
+
+
+    </table>
+</body>

@@ -1,0 +1,222 @@
+﻿@model DemoClient.Models.BookingTbl
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Create";
+    ViewBag.MovieName = @HttpContextAccessor.HttpContext.Session.GetString("MovieName");
+    ViewBag.Date = @HttpContextAccessor.HttpContext.Session.GetString("Date");
+    ViewBag.Slot = @HttpContextAccessor.HttpContext.Session.GetString("Slot");
+    Layout = "UserLayout";
+
+}
+<body style="background-color:rgb(220, 204, 255);font-family:Garamond, serif;">
+    @*<head>
+    <link rel="stylesheet" href="~/css/StyleSheet.css">
+    </head>*@
+
+    <h1>Ticket Booking</h1>
+
+
+
+    @{
+        if (ViewBag.ErrorMessage != null)
+        {
+            <div class="text-danger">
+                @ViewBag.ErrorMessage
+            </div>
+        }
+    }
+
+
+
+    @* @{
+    ViewBag.ErrorMessage = @HttpContextAccessor.HttpContext.Session.GetString("Already Booked");
+    }*@
+
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Movie" class="control-label"></label>
+                    <input asp-for="Movie" class="form-control" disabled value="@ViewBag.MovieName" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="On" class="control-label"></label>
+                    <input asp-for="On" class="form-control" disabled value="@ViewBag.date" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Slot" class="control-label"></label>
+                    <input asp-for="Slot" class="form-control" disabled value="@ViewBag.Slot" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="NoOfTickets" class="control-label"></label>
+                    <input asp-for="NoOfTickets" class="form-control" />
+                    <span asp-validation-for="NoOfTickets" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SeatNo" class="control-label"></label>
+                    <input asp-for="SeatNo" class="form-control" />
+                    <span asp-validation-for="SeatNo" class="text-danger"></span>
+                    @if (ViewBag.Emessage != null)
+                    {
+                        <div class="text-danger">
+                            @ViewBag.Emessage
+                        </div>
+                    }
+                    @if (ViewBag.ErrMessage != null)
+                    {
+                        <div class="text-danger">
+                            @ViewBag.ErrMessage
+                        </div>
+                    }
+                    @if (ViewBag.ValidationMesssage != null)
+                    {
+                        <div class="text-danger">
+                            @ViewBag.ValidationMesssage
+                        </div>
+                    }
+                    @if (ViewBag.SeatErrorMessage != null)
+                    {
+                        <div class="text-danger">
+                            @ViewBag.SeatErrorMessage
+                        </div>
+
+                    }
+                </div>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        table, th, td {
+                            border-collapse: collapse;
+                            border-width: 1mm;
+                        }
+
+                            table.center {
+                                margin-left: auto;
+                                margin-right: auto;
+                            }
+
+                        tr {
+                            border-bottom: 1px solid rgba(150, 212, 212, 0.4);
+                        }
+
+
+
+                            tr:nth-child(even) {
+                                background-color: rgba(150, 212, 212, 0.4);
+                            }
+
+                        th:nth-child(even), td:nth-child(even), td:hover {
+                            background-color: rgba(150, 212, 212, 0.4);
+                        }
+
+                        td:hover {
+                            background-color: rgba(5, 66, 35);
+                        }
+                    </style>
+                </head>
+                <h1 style="text-align=center">Seating  Arrangement</h1>
+                <body>
+                    <p class="text-primary">Please Mention the required seats individually seperated by coma(,)</p>
+                    <table class="center" style="width:50%;text-align: center;">
+                        <tr>
+                            <th colspan="5">Screen</th>
+                        </tr>
+                        <tr style="height:25px;">
+                            <td colspan="5"></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td>4</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>7</td>
+                            <td>8</td>
+                            <td>9</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>12</td>
+                            <td>13</td>
+                            <td>14</td>
+                            <td>15</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>17</td>
+                            <td>18</td>
+                            <td>19</td>
+                            <td>20</td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td>22</td>
+                            <td>23</td>
+                            <td>24</td>
+                            <td>25</td>
+                        </tr>
+                        <tr>
+                            <td>26</td>
+                            <td>27</td>
+                            <td>28</td>
+                            <td>29</td>
+                            <td>30</td>
+                        </tr>
+                        <tr>
+                            <td>31</td>
+                            <td>32</td>
+                            <td>33</td>
+                            <td>34</td>
+                            <td>35</td>
+                        </tr>
+                        <tr>
+                            <td>36</td>
+                            <td>37</td>
+                            <td>38</td>
+                            <td>39</td>
+                            <td>40</td>
+                        </tr>
+                        <tr>
+                            <td>41</td>
+                            <td>42</td>
+                            <td>43</td>
+                            <td>44</td>
+                            <td>45</td>
+                        </tr>
+                        <tr>
+                            <td>46</td>
+                            <td>47</td>
+                            <td>48</td>
+                            <td>49</td>
+                            <td>50</td>
+                        </tr>
+                    </table>
+                </body>
+            </html>
+            <div class="form-group">
+                <input type="submit" value="Add to Cart" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+@*<div>
+    <a asp-action="Index">Back to List</a>
+</div>*@
+
+
+@section Scripts
+    {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -79,6 +79,36 @@ namespace DemoClient.Controllers
 
 
         //}
+        public async Task<IActionResult> BookNow(int? id)
+        {
+            MovieTbl m = new MovieTbl();
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Clear();
+                using (var response = await client.GetAsync("https://localhost:44341/api/Movie/" + id))
+                {
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    m = JsonConvert.DeserializeObject<MovieTbl>(apiResponse);
+                }
+            }
+            HttpContext.Session.SetString("Moviename", m.MovieName);
+            HttpContext.Session.SetInt32("MovieId", m.MovieId);
+            HttpContext.Session.SetString("MovieName", m.MovieName);
+            HttpContext.Session.SetInt32("Cost", m.Cost);
+            HttpContext.Session.SetString("Date", m.Date.ToString());
+            HttpContext.Session.SetString("Slot",   m.Slot);
+            HttpContext.Session.SetInt32("Capacity", m.capacity);
+            if (m.capacity <= 0)
+            {
+                ViewBag.ErrMessage = "HouseFull";
+                return RedirectToAction("Search");
+            }
+            if (m == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction("Create", "Booking");
+        }
         public async Task<IActionResult> Create()
         {
             return View();
