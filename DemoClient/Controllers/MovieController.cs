@@ -27,19 +27,24 @@ namespace DemoClient.Controllers
                 return View(movie);
             }
         }
+        [HttpPost]
         public async Task<IActionResult> Search(DateTime date)
         {
             List<MovieTbl> movie = new List<MovieTbl>();
+            MovieTbl m=new MovieTbl();
+            m.Date=date;
             using(var client=new HttpClient())
             {
                 client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("applicaation/json"));
-                HttpResponseMessage Res = await client.GetAsync("https://localhost:44341/api/Movie/" + date);
-                if(Res.IsSuccessStatusCode)
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                StringContent content=new StringContent(JsonConvert.SerializeObject(m),Encoding.UTF8,"application/json");
+                HttpResponseMessage Res = await client.PostAsync("https://localhost:44341/api/Movie?", content);
+                //HttpResponseMessage Res = await client.GetAsync("https://localhost:44341/api/Movie?" + date);
+                if (Res.IsSuccessStatusCode)
                 {
                     var response = Res.Content.ReadAsStringAsync().Result;
                     movie = JsonConvert.DeserializeObject<List<MovieTbl>>(response);
-                }
+                }                    
                 return View(movie);
             }
         }
@@ -85,7 +90,7 @@ namespace DemoClient.Controllers
             using (var client = new HttpClient())
             {
                 StringContent content = new StringContent(JsonConvert.SerializeObject(movietbl), Encoding.UTF8, "application/json");
-                using (var response = await client.PostAsync("https://localhost:44341/api/Movie", content))
+                using (var response = await client.PostAsync("https://localhost:44341/api/Movie/PostMovieTbl", content))
                 {
                     string apiresponse = await response.Content.ReadAsStringAsync();
                     movie = JsonConvert.DeserializeObject<MovieTbl>(apiresponse);

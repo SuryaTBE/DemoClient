@@ -30,7 +30,7 @@
             }
             else
             {
-                <form asp-controller="Movie" asp-action="search">
+                <form asp-controller="Movie" asp-action="Search">
                     <p>
                         Search By Date: <input type="date" name="date" />
                         <input type="submit" value="Search" />
@@ -105,17 +105,14 @@
             }
             else
             {
-                @*<form asp-controller="Movie" asp-action="search">
+                <form asp-controller="Movie" asp-action="Search">
                     <p>
-                        Search By Date: <input type="date" name="searchdate" />
+                        Search By Date: <input type="date" name="date" />
                         <input type="submit" value="Search" />
                     </p>
-                </form>*@
+                </form>
             <thead>
                 <tr>
-                    <th>
-                            @Html.DisplayNameFor(model => model.MovieId)
-                    </th>
                     <th>
                             @Html.DisplayNameFor(model => model.MovieName)
                     </th>
@@ -141,9 +138,6 @@
                     @foreach (var item in Model)
                     {
                     <tr>
-                        <td>
-                                @Html.DisplayFor(modelItem => item.MovieId)
-                        </td>
                         <td>
                                 @Html.DisplayFor(modelItem => item.MovieName)
                         </td>
