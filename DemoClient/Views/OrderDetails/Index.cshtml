@@ -1,0 +1,163 @@
+﻿@model IEnumerable<DemoClient.Models.OrderDetailTbl>
+@inject IHttpContextAccessor HttpContextAccesor
+
+@{
+    ViewData["Title"] = "Index";
+    ViewBag.UserId = @HttpContextAccesor.HttpContext.Session.GetInt32("UserId");
+    if (ViewBag.UserId != null)
+    {
+        Layout = "ODULayout";
+    }
+    else
+    {
+        Layout = "ODALayout";
+    }
+}
+
+<h1>Booking History</h1>
+<table class="table">
+    @if (ViewBag.UserId != null)
+    {
+        <body style="background-color:rgb(220, 204, 255);font-family:Garamond, serif;">
+            @if (ViewBag.CMessage != null)
+            {
+                <div class="text-danger">@ViewBag.CMessage</div>
+            }
+            else
+            {
+            <thead>
+                <tr>
+                    <th>
+                            @Html.DisplayNameFor(model => model.MovieName)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.MovieDate)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.Slot)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.NoOfTickets)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.SeatNo)
+                    </th>
+                    <th>
+                            @Html.DisplayNameFor(model => model.Cost)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                    @foreach (var item in Model)
+                    {
+                        if (item.UserId == ViewBag.UserId)
+                        {
+                        <tr>
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.MovieName)
+                            </td>
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.MovieDate)
+                            </td>
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.Slot)
+                            </td>
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.NoOfTickets)
+                            </td>
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.SeatNo)
+                            </td>
+                            <td>
+                                    @Html.DisplayFor(modelItem => item.Cost)
+                            </td>
+                            <td>
+                                <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.OrderDetailId">Cancel Tickets</a>
+
+                            </td>
+                        </tr>
+
+                        }
+
+                    }
+
+            </tbody>
+            }
+        </body>
+    }
+    else
+    {
+        <body style="background-color:rgb(214, 245, 214)">
+        <thead>
+            <tr>
+
+                <th>
+                        @Html.DisplayNameFor(model => model.OrderMasterId)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.MovieId)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.MovieName)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.MovieDate)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Slot)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.UserId)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.NoOfTickets)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.SeatNo)
+                </th>
+                <th>
+                        @Html.DisplayNameFor(model => model.Cost)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (var item in Model)
+                {
+                <tr>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.OrderMasterId)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.MovieId)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.MovieName)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.MovieDate)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Slot)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.UserId)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.NoOfTickets)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.SeatNo)
+                    </td>
+                    <td>
+                            @Html.DisplayFor(modelItem => item.Cost)
+                    </td>
+                </tr>
+
+                }
+
+        </tbody>
+        </body>
+    }
+</table>
