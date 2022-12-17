@@ -10,34 +10,35 @@ namespace DemoClient.Controllers
 {
     public class BookingController : Controller
     {
+        //string BaseUrl="link";
+        //use this by using client.BaseAddress=new Uri(BaseUrl);
+        string Baseurl = "https://localhost:44341/api/";
         public async Task<IActionResult> Index()
         {
             int id = (int)HttpContext.Session.GetInt32("UserId");
-            //var sampleContext = _context.BookingTbl.Include(b => b.Movie).Include(b => b.User);
-            List<BookingTbl> book = new List<BookingTbl>();
-            List<BookingTbl> cart = new List<BookingTbl>();
+            List<BookingTbl> bookings = new List<BookingTbl>();
+            List<BookingTbl> book=new List<BookingTbl>();
             using (var client = new HttpClient())
             {
+                client.BaseAddress = new Uri(Baseurl);
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                HttpResponseMessage Res = await client.GetAsync("https://localhost:44341/api/Booking");
+                HttpResponseMessage Res = await client.GetAsync("Booking");
                 if (Res.IsSuccessStatusCode)
                 {
                     var response = Res.Content.ReadAsStringAsync().Result;
                     book = JsonConvert.DeserializeObject<List<BookingTbl>>(response);
-                    cart = (from i in book
+                    bookings = (from i in book
                             where i.UserId == id
                             select i).ToList();
-                    if (cart.Count == 0)
+                    if (bookings.Count == 0)
                     {
                         ViewBag.ErrorMessage = "Your Cart Is Empty..";
-                        return View(cart);
+                        return View(bookings);
                     }
                 }
-                return View(cart);
+                return View(bookings);
             }
-            //List<BookingTbl> cart = (from i in _context.BookingTbl.Include(b => b.Movie).Include(b => b.User) where i.UserId == id select i).ToList();
-
         }
         public bool SeatVal(string seatno, int n)//For No of tickets and Seat selection validation
         {
@@ -73,32 +74,6 @@ namespace DemoClient.Controllers
             return a;
 
         }
-        private readonly DemoContext _context;
-
-        public BookingController(DemoContext context)
-        {
-            _context = context;
-        }
-        public int SeatCheck(string a, DateTime d, int id)//Seat availability
-        {
-            List<OrderDetailTbl> detail = _context.OrderDetails.ToList();
-            string[] SeatList = a.Split(",", StringSplitOptions.RemoveEmptyEntries);
-            for (int b = 0; b < SeatList.Length; b++)
-            {
-                foreach (var od in detail)//check in orderdetails
-                {
-                    string[] Seatnos = od.SeatNo.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                    for (int j = 0; j < Seatnos.Length; j++)
-                    {
-                        if ((od.MovieDate == d) && (od.MovieId == id) && (Seatnos[j] == SeatList[b]))
-                        {
-                            return 0;
-                        }
-                    }
-                }
-            }
-            return 1;
-        }
         public async Task<IActionResult> Create(int id,BookingTbl book)
         {
             return View();
@@ -110,7 +85,7 @@ namespace DemoClient.Controllers
             {
                 book.MovieId = (int)HttpContext.Session.GetInt32("MovieId");
                 book.UserId = (int)HttpContext.Session.GetInt32("UserId");
-                book.MovieName = HttpContext.Session.GetString("MovieName");
+                book.MovieName = HttpContext.Session.GetString("Moviename");
                 int capacity = (int)HttpContext.Session.GetInt32("Capacity");
                 int cost = (int)HttpContext.Session.GetInt32("Cost");
                 book.AmountTotal = book.NoOfTickets * cost;
@@ -120,32 +95,30 @@ namespace DemoClient.Controllers
                 string Seat = book.SeatNo;
                 string[] seats = Seat.Split(",", StringSplitOptions.RemoveEmptyEntries);
                 string SeatNo = string.Join(",", seats);
-                MovieTbl movie = new MovieTbl();
+                book.SeatNo = SeatNo;
+                BookingTbl book1 = new BookingTbl();
                 if (book.NoOfTickets < capacity)
                 {
                     if (SeatVal(SeatNo, book.NoOfTickets))
                     {
                         if (SeatnoVal(book.SeatNo))
                         {
-                            int i = SeatCheck(book.SeatNo, book.Date, book.MovieId);
-                            if (i == 1)
+                            using (var client = new HttpClient())
                             {
-                                using (var client = new HttpClient())
+                                StringContent content = new StringContent(JsonConvert.SerializeObject(book), Encoding.UTF8, "application/json");
+                                using (var response = await client.PostAsync("https://localhost:44341/api/Booking/Create", content))
                                 {
-                                    StringContent content = new StringContent(JsonConvert.SerializeObject(book), Encoding.UTF8, "application/json");
-                                    using (var response = await client.PostAsync("https://localhost:44341/api/Booking", content))
-                                    {
-                                        string apiresponse = await response.Content.ReadAsStringAsync();
-                                        movie = JsonConvert.DeserializeObject<MovieTbl>(apiresponse);
-                                    }
+                                    string apiresponse = await response.Content.ReadAsStringAsync();
+                                    book1 = JsonConvert.DeserializeObject<BookingTbl>(apiresponse);
                                 }
                             }
-                            else
+                            if (book.SeatNo == "Null")
                             {
 
                                 ViewBag.ErrorMessage = "Already Booked.";
                                 return View();
                             }
+                            return Redirect("Index");
                         }
                         else
                         {
@@ -181,7 +154,7 @@ namespace DemoClient.Controllers
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Clear();
-                using (var response = await client.GetAsync("https://localhost:44341/api/Booking/Details" + id))
+                using (var response = await client.GetAsync("https://localhost:44341/api/Booking/" + id))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     b = JsonConvert.DeserializeObject<BookingTbl>(apiResponse);
@@ -193,10 +166,11 @@ namespace DemoClient.Controllers
         {
             TempData["Id"] = id;
             BookingTbl? b = new BookingTbl();
+            //List<BookingTbl> b = new List<BookingTbl>();
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Clear();
-                using (var response = await client.GetAsync("https://localhost:44341/api/Booking" + id))
+                using (var response = await client.GetAsync("https://localhost:44341/api/Booking/" + id))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     b = JsonConvert.DeserializeObject<BookingTbl>(apiResponse);
@@ -205,80 +179,61 @@ namespace DemoClient.Controllers
             return View(b);
         }
         [HttpPost]
-        public async Task<IActionResult> Delete(MovieTbl m)
+        public async Task<IActionResult> Delete(BookingTbl m)
         {
             int Id = Convert.ToInt32(TempData["Id"]);
             //Employee emp = new Employee();
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Clear();
-                await client.DeleteAsync("https://localhost:44341/api/Booking" + Id);
+                await client.DeleteAsync("https://localhost:44341/api/Booking/" + Id);
 
             }
             return RedirectToAction("Index");
         }
         [HttpPost]
-        public async Task<IActionResult> ProceedToBuy()
+        public async Task<ActionResult> ProceedToBuy()
         {
-            var userid= HttpContext.Session.GetInt32("UserId");
-            BookingTbl book = new BookingTbl();
-            book.UserId = userid;
-            List<BookingTbl> Cart = new List<BookingTbl>();
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                StringContent content = new StringContent(JsonConvert.SerializeObject(book), Encoding.UTF8, "application/json");
-                HttpResponseMessage Res = await client.PostAsync("https://localhost:44341/api/Booking/ListConvert", content);
-                if (Res.IsSuccessStatusCode)
-                {
-                    var response = Res.Content.ReadAsStringAsync().Result;
-                    Cart = JsonConvert.DeserializeObject<List<BookingTbl>>(response);
-                }
-            }
-            foreach (var i in Cart)
-            {
-                int a = SeatCheck(i.SeatNo, i.Date, i.MovieId);
-                if (a == 0)
-                {
-                    var msg = "Seat is already booked.\n Try selecting other seats";
-                    HttpContext.Session.SetString("msg", msg);
-                    return RedirectToAction("Index");
-                }
-            }
-            OrderMasterTbl om = new OrderMasterTbl();
-
-            om.OrderDate = DateTime.Today;
-            om.UserId = userid;
-            om.Amount = 0;
-            foreach (var item in Cart)
-            {
-
-                om.Amount += item.AmountTotal;
-            }
-            OrderMasterTbl om1 = new OrderMasterTbl();
-            using (var client = new HttpClient())
-            {
-                StringContent content = new StringContent(JsonConvert.SerializeObject(om), Encoding.UTF8, "application/json");
-                using (var response = await client.PostAsync("https://localhost:44341/api/Booking/AddToOrderMaster", content))
-                {
-                    string apiresponse = await response.Content.ReadAsStringAsync();
-                    om1 = JsonConvert.DeserializeObject<OrderMasterTbl>(apiresponse);
-                }
-            }
-            HttpContext.Session.SetInt32("Total", (int)om1.Amount);
-            return RedirectToAction("Payment", new { id = om1.OrderMasterId });
-        }
-        public async Task<IActionResult> Payment(int id)
-        {
+            int id = (int)HttpContext.Session.GetInt32("UserId");
             OrderMasterTbl om = new OrderMasterTbl();
             using (var client = new HttpClient())
             {
+                client.BaseAddress = new Uri(Baseurl);
                 client.DefaultRequestHeaders.Clear();
-                using (var response = await client.GetAsync("https://localhost:44341/api/Booking/OrderMasterGetById?id=" + id))
+                StringContent content = new StringContent(JsonConvert.SerializeObject(id), Encoding.UTF8, "application/json");
+                using (var response = await client.PostAsync("Booking/ProceedtoBuy?id=" + id, content))
                 {
                     string apiResponse = await response.Content.ReadAsStringAsync();
                     om = JsonConvert.DeserializeObject<OrderMasterTbl>(apiResponse);
+                    HttpContext.Session.SetInt32("Masterid", om.OrderMasterId);
+                }
+
+            }
+            if(om.Amount==1)
+            {
+                var msg = "Seat is already booked.\n Try selecting other seats";
+                HttpContext.Session.SetString("msg", msg);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                HttpContext.Session.SetInt32("Total", (int)om.Amount);
+                return RedirectToAction("Payment", new { id = om.OrderMasterId });
+            }
+            
+        }
+        [HttpGet]
+        public async Task<IActionResult> Payment(int? id)
+        {
+            OrderMasterTbl om = new OrderMasterTbl();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(Baseurl);
+                client.DefaultRequestHeaders.Clear();
+                using (var response = await client.GetAsync("Booking/GetPaymentById?id=" + id))
+                {
+                    var apiresponse = response.Content.ReadAsStringAsync().Result;
+                    om = JsonConvert.DeserializeObject<OrderMasterTbl>(apiresponse);
                 }
             }
             return View(om);
@@ -287,99 +242,22 @@ namespace DemoClient.Controllers
         public async Task<IActionResult> Payment(OrderMasterTbl om)
         {
             var UserId = HttpContext.Session.GetInt32("UserId");
-            BookingTbl book = new BookingTbl();
-            book.UserId = UserId;
-            List<BookingTbl> Cart = new List<BookingTbl>();
-            List<BookingTbl> booking = new List<BookingTbl>();
-            List<OrderDetailTbl> od = new List<OrderDetailTbl>();
+            om.UserId = (int)UserId;
+            OrderMasterTbl om1 = new OrderMasterTbl();
             using (var client = new HttpClient())
             {
+                client.BaseAddress = new Uri(Baseurl);
                 client.DefaultRequestHeaders.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                StringContent content = new StringContent(JsonConvert.SerializeObject(book), Encoding.UTF8, "application/json");
-                HttpResponseMessage Res = await client.PostAsync("https://localhost:44341/api/Booking/ListConvert", content);
-                if (Res.IsSuccessStatusCode)
+                StringContent content = new StringContent(JsonConvert.SerializeObject(om), Encoding.UTF8, "application/json");
+                using (var response = await client.PostAsync("Booking/Payment", content))
                 {
-                    var response = Res.Content.ReadAsStringAsync().Result;
-                    Cart = JsonConvert.DeserializeObject<List<BookingTbl>>(response);
+                    string apiResponse = await response.Content.ReadAsStringAsync();
+                    om1 = JsonConvert.DeserializeObject<OrderMasterTbl>(apiResponse);
                 }
+                //return RedirectToAction("GetAllProduct", "Product");
             }
-            if(om.Paid==om.Amount)
+            if(om1.Paid!=0)
             {
-                booking = Cart;
-                OrderMasterTbl om1 = new OrderMasterTbl();
-                using (var client = new HttpClient())
-                {
-                    client.DefaultRequestHeaders.Clear();
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(om), Encoding.UTF8, "application/json");
-                    using (var response = await client.PutAsync("https://localhost:44341/api/Booking", content))
-                    {
-                        string apiResponse = await response.Content.ReadAsStringAsync();
-                        om1 = JsonConvert.DeserializeObject<OrderMasterTbl>(apiResponse);
-                    }
-                }
-                foreach (var j in booking)
-                {
- 
-                    MovieTbl m = new MovieTbl();
-                    using (var client = new HttpClient())
-                    {
-                        client.DefaultRequestHeaders.Clear();
-                        using (var response = await client.GetAsync("https://localhost:44341/api/Movie/" + j.MovieId))
-                        {
-                            string apiResponse = await response.Content.ReadAsStringAsync();
-                            m = JsonConvert.DeserializeObject<MovieTbl>(apiResponse);
-                        }
-
-                    }
-                    m.capacity -= j.NoOfTickets;
-                    MovieTbl m1 = new MovieTbl();
-                    using (var client = new HttpClient())
-                    {
-                        client.DefaultRequestHeaders.Clear();
-                        StringContent content = new StringContent(JsonConvert.SerializeObject(om), Encoding.UTF8, "application/json");
-                        using (var response = await client.PutAsync("https://localhost:44341/api/Movie", content))
-                        {
-                            string apiResponse = await response.Content.ReadAsStringAsync();
-                            om1 = JsonConvert.DeserializeObject<OrderMasterTbl>(apiResponse);
-                        }
-                    }
-                }
-                foreach (var item in Cart)
-                {
-                    OrderDetailTbl detail = new OrderDetailTbl();
-                    detail.MovieId = item.MovieId;
-                    detail.NoOfTickets = item.NoOfTickets;
-                    detail.MovieName = item.MovieName;
-                    detail.UserId = (int)HttpContext.Session.GetInt32("UserId");
-                    string dt = HttpContext.Session.GetString("Date");
-                    detail.MovieDate = Convert.ToDateTime(dt);
-                    detail.Slot = HttpContext.Session.GetString("slot");
-                    detail.SeatNo = item.SeatNo;
-                    detail.Cost = item.AmountTotal;
-                    detail.OrderMasterId = om1.OrderMasterId;
-                    od.Add(detail);
-                }
-                List<OrderDetailTbl> od1 = new List<OrderDetailTbl>();
-                using (var client = new HttpClient())
-                {
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(od), Encoding.UTF8, "application/json");
-                    using (var response = await client.PostAsync("https://localhost:44341/api/Booking/AddRangeOrderDetails", content))
-                    {
-                        string apiresponse = await response.Content.ReadAsStringAsync();
-                        od1 = JsonConvert.DeserializeObject<List<OrderDetailTbl>>(apiresponse);
-                    }
-                }
-                List<BookingTbl> bt = new List<BookingTbl>();
-                using (var client = new HttpClient())
-                {
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(booking), Encoding.UTF8, "application/json");
-                    using (var response = await client.PostAsync("https://localhost:44341/api/Booking/RemoveRangeCart", content))
-                    {
-                        string apiresponse = await response.Content.ReadAsStringAsync();
-                        bt = JsonConvert.DeserializeObject<List<BookingTbl>>(apiresponse);
-                    }
-                }
                 return RedirectToAction("Thankyou");
             }
             else

@@ -46,7 +46,7 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Movie.MovieName)
+                        @Html.DisplayFor(modelItem => item.MovieName)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Date)
@@ -70,7 +70,8 @@
                     <td>
                         @*
                     <a asp-action="Details" asp-route-id="@item.BookingId">Details</a> |*@
-                        <a class="btn btn-warning" asp-action="Delete" asp-route-id="@item.BookingId">Delete</a>
+                        <a class="btn btn-warning" asp-action="Delete" asp-route-id="@item.BookingId">Remove from Cart</a>
+                        <a class="btn btn-warning" asp-action="Details" asp-route-id="@item.BookingId">Details</a>
                     </td>
                 </tr>
             }
